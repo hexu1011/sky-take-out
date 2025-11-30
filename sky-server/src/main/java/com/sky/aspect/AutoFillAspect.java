@@ -28,7 +28,7 @@ public class AutoFillAspect {
     /**
      * 前置通知，在通知中进行公共字段赋值
      */
-    @Before("autoFillPorintcut()")
+    @Before("autoFillPointcut()")
     public void autoFill(JoinPoint joinPoint){
         log.info("开始进行公共字段填充");
 
