@@ -9,6 +9,7 @@ public interface DishFlavorMapper {
 
     /**
      * 批量插入Flavor数据
+     * 
      * @param flavors
      */
     void insertBatch(List<DishFlavor> flavors);
