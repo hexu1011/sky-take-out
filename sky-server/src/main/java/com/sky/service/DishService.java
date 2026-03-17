@@ -44,4 +44,18 @@ public interface DishService {
      * @return
      */
     public DishVO getById(Long id);
+
+    /**
+     * 根据分类id查询菜品列表
+     * @param categoryId
+     * @return
+     */
+    public List<DishVO> list(Long categoryId);
+
+    /**
+     * 菜品起售、停售
+     * @param status
+     * @param id
+     */
+    public void startOrStop(Integer status, Long id);
 }
