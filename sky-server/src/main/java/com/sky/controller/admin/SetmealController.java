@@ -1,6 +1,7 @@
 package com.sky.controller.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,6 +38,7 @@ public class SetmealController {
      */
     @PostMapping
     @ApiOperation(value = "新建套餐")
+    @CacheEvict(cacheNames = "setmealCache",key = "#setmealDTO.categoryId")
     public Result add(@RequestBody SetmealDTO setmealDTO) {
         log.info("新建套餐：{}", setmealDTO);
 
@@ -66,6 +68,7 @@ public class SetmealController {
      */
     @DeleteMapping
     @ApiOperation(value = "套餐批量删除")
+    @CacheEvict(cacheNames = "setmealCache",allEntries = true)
     public Result deleteBatch(@RequestParam List<Long> ids) {
         log.info("套餐批量删除：{}", ids);
 
@@ -82,6 +85,7 @@ public class SetmealController {
      */
     @PutMapping
     @ApiOperation(value = "修改套餐")
+    @CacheEvict(cacheNames = "setmealCache",allEntries = true)
     public Result update(@RequestBody SetmealDTO setmealDTO) {
         log.info("修改套餐：{}", setmealDTO);
 
@@ -108,6 +112,7 @@ public class SetmealController {
      */
     @PostMapping("/status/{status}")
     @ApiOperation(value = "启售停售套餐")
+    @CacheEvict(cacheNames = "setmealCache",allEntries = true)
     public Result startOrStop(@PathVariable Integer status, @RequestParam Long id) {
         log.info("启售停售套餐：status={}, id={}", status, id);
 
