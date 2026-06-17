@@ -33,7 +33,6 @@ sky-take-out (parent POM)
 - Shopping cart and address book
 - Place order & pay via WeChat Pay
 
-`*` = my own extension
 
 ## Highlights
 - **Auto-fill of common DB fields** (create/update time & user) via
