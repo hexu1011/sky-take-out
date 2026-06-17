@@ -6,7 +6,7 @@ A full-stack food-ordering system for catering businesses, consisting of a
 
 Built with Spring Boot in a multi-module Maven architecture. The project
 started as a guided learning project; I implemented the backend module by
-module and added my own extensions (see *My Extensions*).
+module.
 
 ## Tech Stack
 - **Backend:** Spring Boot, Spring MVC, MyBatis
