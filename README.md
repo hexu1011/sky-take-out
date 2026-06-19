@@ -1,11 +1,11 @@
 # Sky Take-Out (苍穹外卖) — Online Food Ordering System
 
-A full-stack food-ordering system for catering businesses, consisting of a
+A food-ordering system for catering businesses, consisting of a
 **web admin backend** (employee, dish, set-meal & shop management) and a
 **WeChat Mini-Program** for customers (browse, cart, order, payment).
 
 Built with Spring Boot in a multi-module Maven architecture. The project
-started as a guided learning project; I implemented the backend module by
+started as a learning project; I implemented the backend module by
 module.
 
 ## Tech Stack
