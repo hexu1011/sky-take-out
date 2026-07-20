@@ -173,7 +173,6 @@ public class DishServiceImpl implements DishService {
      * @param dish
      * @return
      */
-    // TODO
     public List<DishVO> listWithFlavor(Dish dish) {
         List<Dish> dishList = dishMapper.listByCategoryId(dish.getCategoryId());
 
