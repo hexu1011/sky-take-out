@@ -1,14 +1,36 @@
 package com.sky.utils;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+
+import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.Map;
 
 public class JwtUtil {
+
+    /**
+     * 由任意长度的秘钥字符串派生出满足 HS256 要求（≥256 位）的签名密钥。
+     * jjwt 0.10+ 对 HMAC 密钥长度有强制校验，而项目中的秘钥较短，
+     * 故用 SHA-256 摘要得到固定 256 位密钥，秘钥配置无需改动。
+     *
+     * @param secretKey 秘钥字符串
+     * @return HS256 签名密钥
+     */
+    private static SecretKey getSigningKey(String secretKey) {
+        try {
+            byte[] keyBytes = MessageDigest.getInstance("SHA-256")
+                    .digest(secretKey.getBytes(StandardCharsets.UTF_8));
+            return Keys.hmacShaKeyFor(keyBytes);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 不可用", e);
+        }
+    }
+
     /**
      * 生成jwt
      * 使用Hs256算法, 私匙使用固定秘钥
@@ -19,23 +41,17 @@ public class JwtUtil {
      * @return
      */
     public static String createJWT(String secretKey, long ttlMillis, Map<String, Object> claims) {
-        // 指定签名的时候使用的签名算法，也就是header那部分
-        SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+        // 生成JWT的过期时间
+        Date exp = new Date(System.currentTimeMillis() + ttlMillis);
 
-        // 生成JWT的时间
-        long expMillis = System.currentTimeMillis() + ttlMillis;
-        Date exp = new Date(expMillis);
-
-        // 设置jwt的body
-        JwtBuilder builder = Jwts.builder()
-                // 如果有私有声明，一定要先设置这个自己创建的私有的声明，这个是给builder的claim赋值，一旦写在标准的声明赋值之后，就是覆盖了那些标准的声明的
-                .setClaims(claims)
-                // 设置签名使用的签名算法和签名使用的秘钥
-                .signWith(signatureAlgorithm, secretKey.getBytes(StandardCharsets.UTF_8))
+        return Jwts.builder()
+                // 如果有私有声明，一定要先设置这个自己创建的私有的声明
+                .claims(claims)
                 // 设置过期时间
-                .setExpiration(exp);
-
-        return builder.compact();
+                .expiration(exp)
+                // 设置签名使用的签名算法和签名使用的秘钥
+                .signWith(getSigningKey(secretKey))
+                .compact();
     }
 
     /**
@@ -46,13 +62,13 @@ public class JwtUtil {
      * @return
      */
     public static Claims parseJWT(String secretKey, String token) {
-        // 得到DefaultJwtParser
-        Claims claims = Jwts.parser()
+        return Jwts.parser()
                 // 设置签名的秘钥
-                .setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8))
+                .verifyWith(getSigningKey(secretKey))
+                .build()
                 // 设置需要解析的jwt
-                .parseClaimsJws(token).getBody();
-        return claims;
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
 }

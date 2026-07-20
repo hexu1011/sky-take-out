@@ -7,16 +7,16 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import lombok.extern.slf4j.Slf4j;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.redis.core.RedisTemplate;
 import com.sky.result.Result;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
 @RequestMapping("/admin/shop")
 @Slf4j
-@Api(tags = "商户相关接口")
+@Tag(name = "商户相关接口")
 public class ShopController {
 
     public static final String KEY = "SHOP_STATUS";
@@ -25,7 +25,7 @@ public class ShopController {
     private RedisTemplate redisTemplate;
 
     @PutMapping("/{status}")
-    @ApiOperation(value = "商户营业状态设置")
+    @Operation(summary = "商户营业状态设置")
     public Result setStatus(@PathVariable Integer status) {
         log.info("商户营业状态设置：{}", status);
 
@@ -35,7 +35,7 @@ public class ShopController {
     }
 
     @GetMapping("/status")
-    @ApiOperation(value = "商户营业状态查询")
+    @Operation(summary = "商户营业状态查询")
     public Result<Integer> getStatus() {
         Integer status = (Integer) redisTemplate.opsForValue().get(KEY);
         return Result.success(status);

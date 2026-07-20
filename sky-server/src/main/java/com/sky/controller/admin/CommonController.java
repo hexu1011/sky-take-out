@@ -1,8 +1,8 @@
 package com.sky.controller.admin;
 
 import com.sky.result.Result;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/admin/common")
-@Api("通用接口")
+@Tag(name = "通用接口")
 @Slf4j
 public class CommonController {
 
@@ -26,7 +26,7 @@ public class CommonController {
     @Value("${file.access-url}")
     private String accessUrl; // 前端可访问的 URL 前缀
 
-    @ApiOperation("文件上传接口")
+    @Operation(summary = "文件上传接口")
     @PostMapping("/upload")
     public Result<String> upload(MultipartFile file) {
         String filename = file.getOriginalFilename();

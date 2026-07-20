@@ -6,7 +6,7 @@ import com.sky.constant.JwtClaimsConstant;
 import com.sky.dto.UserLoginDTO;
 import com.sky.result.Result;
 import com.sky.vo.UserLoginVO;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.Map;
@@ -15,14 +15,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import com.sky.service.UserService;
 import com.sky.utils.JwtUtil;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 import com.sky.entity.User;
 import com.sky.properties.JwtProperties;
 import java.util.HashMap;
 
 @RestController
 @RequestMapping("/user/user")
-@Api(tags = "用户相关接口")
+@Tag(name = "用户相关接口")
 @Slf4j
 public class UserController {
 
@@ -38,7 +38,7 @@ public class UserController {
      * @return
      */
     @PostMapping("/login")
-    @ApiOperation(value = "用户登录")
+    @Operation(summary = "用户登录")
     public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO) {
         log.info("用户登录：{}", userLoginDTO);
 
