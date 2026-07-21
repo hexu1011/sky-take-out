@@ -8,3 +8,4 @@ CLAUDE.md
 sky-server/src/main/resources/application-dev.yml
 sky-server/src/main/resources/uploads
 docs/backend-react-tutorial.md
+docs/frontend-react-tutorial.md
