@@ -28,4 +28,12 @@ public interface UserMapper {
      */
     @Select("select * from user where id = #{id}")
     User getById(Long id);
+
+    /**
+     * 根据邮箱查询用户
+     * @param email
+     * @return
+     */
+    @Select("select * from user where email = #{email}")
+    User getByEmail(String email);
 }

@@ -1,20 +1,17 @@
 package com.sky.vo;
 
+import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserLoginVO implements Serializable {
+public class UserRegisterVO implements Serializable {
 
     private Long id;
-    private String name;
-    private String token;
-
+    
 }

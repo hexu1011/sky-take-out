@@ -4,64 +4,67 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.sky.constant.MessageConstant;
 import com.sky.dto.UserLoginDTO;
+import com.sky.dto.UserRegisterDTO;
 import com.sky.entity.User;
 import com.sky.exception.LoginFailedException;
 import com.sky.mapper.UserMapper;
 import com.sky.properties.WeChatProperties;
 import com.sky.service.UserService;
 import com.sky.utils.HttpClientUtil;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    public static final String WX_LOGIN = "https://api.weixin.qq.com/sns/jscode2session";
-
-    @Autowired
-    public WeChatProperties weChatProperties;
-    @Autowired
-    public UserMapper userMapper;
+    // 密码加密器，变成常量使用，密码以后会使用加密器加密存储到数据库中
+    private static final BCryptPasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder(); 
+    public final WeChatProperties weChatProperties;
+    public final UserMapper userMapper;
 
     /**
-     * 用户登录
-     * 
-     * @param userLoginDTO
-     * @return
+     * User Register
+     * @param userRegisterDTO
      */
-    public User wxlogin(UserLoginDTO userLoginDTO) {
-        // 调用微信接口服务，获取用户的openid
-        Map<String, String> map = new HashMap<>();
-        map.put("appid", weChatProperties.getAppid());
-        map.put("secret", weChatProperties.getSecret());
-        map.put("js_code", userLoginDTO.getCode());
-        map.put("grant_type", "authorization_code");
-        String json = HttpClientUtil.doGet(WX_LOGIN, map);
+    public User register(UserRegisterDTO userRegisterDTO) {
 
-        JSONObject jsonObject = JSON.parseObject(json);
-        String openid = jsonObject.getString("openid");
-
-        // 判断openid是否为空，如果为空抛出异常
-        if (openid == null) {
-            throw new LoginFailedException(MessageConstant.LOGIN_FAILED);
+        // 判断邮箱是否已被注册
+        if(userMapper.getByEmail(userRegisterDTO.getEmail()) != null) {
+            throw new LoginFailedException(MessageConstant.EMAIL_ALREADY_EXISTS);
         }
 
-        // 判断当前用户是否为新用户
-        User user = userMapper.getByOpenid(openid);
+        User user = User.builder()
+                .name(userRegisterDTO.getName())
+                .email(userRegisterDTO.getEmail())
+                .password(PASSWORD_ENCODER.encode(userRegisterDTO.getPassword()))
+                .createTime(LocalDateTime.now())
+                .build();
+        userMapper.insert(user);
+        return user;
+    }
 
-        // 如果是新用户，插入数据
-        if (user == null) {
-            user = User.builder()
-                    .openid(openid)
-                    .createTime(LocalDateTime.now())
-                    .build();
-            userMapper.insert(user);
+    /**
+     * User Login
+     * @param userLoginDTO
+     */
+    public User login(UserLoginDTO userLoginDTO) {
+        // 根据邮箱查询用户
+        User user = userMapper.getByEmail(userLoginDTO.getEmail());
+        if (user == null){
+            throw new LoginFailedException(MessageConstant.ACCOUNT_NOT_FOUND);
         }
 
-        // 返回用户信息
+        // 校验密码
+        if (!PASSWORD_ENCODER.matches(userLoginDTO.getPassword(), user.getPassword())) {
+            throw new LoginFailedException(MessageConstant.PASSWORD_ERROR);
+        }
+
         return user;
     }
 }
